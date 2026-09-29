@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Módulo 1: Sumas de Riemann</title>
+
+  <!-- Tipografías (las mismas del index) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+
+  <!-- Estilos del sitio. Fíjate en el "../": sube una carpeta desde modulo-01-riemann hasta la raíz -->
+  <link rel="stylesheet" href="../assets/css/styles.css">
+  <link rel="stylesheet" href="../assets/css/module.css">
+
+  <!-- KaTeX: dibuja las fórmulas matemáticas -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Plotly: dibuja las gráficas interactivas -->
+  <script defer src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+
+  <!-- ===== ENCABEZADO ===== -->
+  <header class="module-header">
+    <div class="container">
+      <a class="back-link" href="../index.html">← Volver al inicio</a>
+      <div><span class="module-chip">Módulo 01</span></div>
+      <h1>Sumas de Riemann</h1>
+      <p class="lead">
+        Una suma de Riemann aproxima el área bajo una curva dividiéndola en rectángulos.
+        Mientras más rectángulos usas, mejor es la aproximación, y en el límite obtienes
+        la integral definida.
+      </p>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <nav class="toc" aria-label="Contenido de la página">
+      <a href="#teoria">Teoría</a>
+      <a href="#visualizador">Visualizador interactivo</a>
+      <a href="#ejemplos">Ejemplos resueltos</a>
+    </nav>
+
+    <!-- ===== SECCIÓN 1: TEORÍA ===== -->
+    <section class="content-section" id="teoria">
+      <h2>¿Qué es una suma de Riemann?</h2>
+      <p>
+        Para estimar el área bajo la gráfica de una función \(f\) entre \(x=a\) y \(x=b\),
+        dividimos el intervalo \([a,b]\) en \(n\) subintervalos del mismo ancho y, sobre cada uno,
+        levantamos un rectángulo. La suma de las áreas de esos rectángulos es una <strong>suma de Riemann</strong>.
+      </p>
+
+      <div class="formula-box">
+        \[ \Delta x = \frac{b-a}{n}, \qquad x_i = a + i\,\Delta x \quad (i = 0, 1, \dots, n) \]
+      </div>
+
+      <p>
+        Cada rectángulo tiene base \(\Delta x\) y altura igual al valor de \(f\) en un punto de su subintervalo.
+        Según qué punto elijas, obtienes tres variantes:
+      </p>
+
+      <div class="concept-grid">
+        <div class="concept-card">
+          <h3>Suma izquierda</h3>
+          \[ L_n = \sum_{i=0}^{n-1} f(x_i)\,\Delta x \]
+          <p>La altura de cada rectángulo es el valor de \(f\) en el extremo <strong>izquierdo</strong> del subintervalo.</p>
+        </div>
+        <div class="concept-card">
+          <h3>Suma derecha</h3>
+          \[ R_n = \sum_{i=1}^{n} f(x_i)\,\Delta x \]
+          <p>La altura es el valor de \(f\) en el extremo <strong>derecho</strong> del subintervalo.</p>
+        </div>
+        <div class="concept-card">
+          <h3>Punto medio</h3>
+          \[ M_n = \sum_{i=1}^{n} f(\bar{x}_i)\,\Delta x \]
+          \[ \bar{x}_i = \frac{x_{i-1}+x_i}{2} \]
+          <p>La altura es el valor de \(f\) en el <strong>centro</strong> del subintervalo.</p>
+        </div>
+      </div>
+
+      <div class="callout">
+        <p class="callout-title">¿Sobreestima o subestima?</p>
+        <p>
+          Si \(f\) es <strong>creciente</strong> en \([a,b]\), la suma izquierda subestima el área y la derecha la sobreestima.
+          Si \(f\) es <strong>decreciente</strong>, ocurre lo contrario. El punto medio suele compensar los errores de ambos
+          lados, por eso normalmente es más preciso con el mismo \(n\).
+        </p>
+      </div>
+
+      <h3>De la suma a la integral</h3>
+      <p>
+        Cuando \(n\) crece, \(\Delta x\) se hace cada vez más pequeño y las tres sumas se acercan al mismo valor:
+        la integral definida.
+      </p>
+      <div class="formula-box">
+        \[ \int_a^b f(x)\,dx = \lim_{n\to\infty} \sum_{i=1}^{n} f(x_i^*)\,\Delta x \]
+      </div>
+      <p>
+        Aquí \(x_i^*\) es el punto elegido en cada subintervalo (izquierdo, derecho o medio).
+        Para una función continua, el límite es el mismo sin importar cuál elijas.
+      </p>
+    </section>
+
+    <!-- ===== SECCIÓN 2: VISUALIZADOR ===== -->
+    <section class="content-section" id="visualizador">
+      <h2>Visualizador interactivo</h2>
+      <p>
+        Elige una función, el intervalo y el método. Mueve el deslizador de \(n\) y observa cómo
+        los rectángulos se ajustan a la curva y cómo el error se reduce.
+      </p>
+
+      <div class="viz-layout">
+
+        <!-- Panel de controles -->
+        <div class="controls">
+          <div class="field">
+            <label for="sel-funcion">Función</label>
+            <select id="sel-funcion">
+              <option value="cuadrada">f(x) = x²</option>
+              <option value="inversa">f(x) = 1/x</option>
+              <option value="raiz">f(x) = √x</option>
+              <option value="exponencial">f(x) = eˣ</option>
+              <option value="seno">f(x) = sen x</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <span class="field-label">Intervalo [a, b]</span>
+            <div class="field-row">
+              <input type="text" id="in-a" inputmode="decimal" aria-label="Límite inferior a" value="0">
+              <input type="text" id="in-b" inputmode="decimal" aria-label="Límite superior b" value="2">
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="field-label">Método</span>
+            <div class="segmented">
+              <input type="radio" name="metodo" id="m-izq" value="izq" checked>
+              <label for="m-izq">Izquierda</label>
+              <input type="radio" name="metodo" id="m-der" value="der">
+              <label for="m-der">Derecha</label>
+              <input type="radio" name="metodo" id="m-med" value="medio">
+              <label for="m-med">Punto medio</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="in-n">Número de rectángulos: n = <span class="n-value" id="n-valor">4</span></label>
+            <input type="range" id="in-n" min="1" max="100" value="4">
+          </div>
+
+          <p class="error-msg" id="mensaje-error" role="alert"></p>
+        </div>
+
+        <!-- Gráfica principal -->
+        <div>
+          <div id="grafica-riemann" class="plot"></div>
+        </div>
+      </div>
+
+      <!-- Resultados numéricos -->
+      <div class="results" id="resultados" aria-live="polite">
+        <div class="result-item" id="res-izq"><span>Suma izquierda</span><strong id="v-izq">-</strong></div>
+        <div class="result-item" id="res-der"><span>Suma derecha</span><strong id="v-der">-</strong></div>
+        <div class="result-item" id="res-medio"><span>Punto medio</span><strong id="v-medio">-</strong></div>
+        <div class="result-item"><span>Valor exacto</span><strong id="v-exacto">-</strong></div>
+        <div class="result-item"><span>Error del método elegido</span><strong id="v-error">-</strong></div>
+      </div>
+
+      <h3>Convergencia al aumentar n</h3>
+      <p>
+        La gráfica muestra cómo cada suma se acerca al valor exacto cuando \(n\) crece.
+        La línea punteada vertical marca el valor de \(n\) que tienes seleccionado.
+      </p>
+      <div id="grafica-convergencia" class="plot plot-small"></div>
+
+      <div class="table-wrap">
+        <table class="data-table" id="tabla-convergencia">
+          <thead>
+            <tr><th>n</th><th>Izquierda</th><th>Derecha</th><th>Punto medio</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== SECCIÓN 3: EJEMPLOS RESUELTOS ===== -->
+    <section class="content-section" id="ejemplos">
+      <h2>Ejemplos resueltos paso a paso</h2>
+
+      <!-- Ejemplo 1 -->
+      <article class="example">
+        <h3>Ejemplo 1: función creciente</h3>
+        <p class="statement">
+          Calcule \(L_4\), \(R_4\) y \(M_4\) para \(f(x)=x^2\) en \([0,2]\) y compare con el valor exacto.
+        </p>
+
+        <div class="step">
+          <p class="step-title">Paso 1. Ancho de cada subintervalo</p>
+          \[ \Delta x = \frac{b-a}{n} = \frac{2-0}{4} = 0.5 \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 2. Puntos y valores de la función</p>
+          <p>Los extremos son \(x_i = 0.5\,i\). Los puntos medios están en el centro de cada subintervalo.</p>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>\(i\)</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead>
+              <tbody>
+                <tr><th>\(x_i\)</th><td>0</td><td>0.5</td><td>1</td><td>1.5</td><td>2</td></tr>
+                <tr><th>\(f(x_i)\)</th><td>0</td><td>0.25</td><td>1</td><td>2.25</td><td>4</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Subintervalo</th><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead>
+              <tbody>
+                <tr><th>\(\bar{x}_i\)</th><td>0.25</td><td>0.75</td><td>1.25</td><td>1.75</td></tr>
+                <tr><th>\(f(\bar{x}_i)\)</th><td>0.0625</td><td>0.5625</td><td>1.5625</td><td>3.0625</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 3. Suma izquierda (usa \(x_0, x_1, x_2, x_3\))</p>
+          \[ L_4 = 0.5\,[\,0 + 0.25 + 1 + 2.25\,] = 0.5 \cdot 3.5 = 1.75 \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 4. Suma derecha (usa \(x_1, x_2, x_3, x_4\))</p>
+          \[ R_4 = 0.5\,[\,0.25 + 1 + 2.25 + 4\,] = 0.5 \cdot 7.5 = 3.75 \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 5. Suma de punto medio</p>
+          \[ M_4 = 0.5\,[\,0.0625 + 0.5625 + 1.5625 + 3.0625\,] = 0.5 \cdot 5.25 = 2.625 \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 6. Valor exacto</p>
+          \[ \int_0^2 x^2\,dx = \left[\frac{x^3}{3}\right]_0^2 = \frac{8}{3} \approx 2.6667 \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Conclusión</p>
+          <p>
+            Como \(f(x)=x^2\) es creciente en \([0,2]\), se cumple \(L_4 < \tfrac{8}{3} < R_4\).
+            Los errores son: izquierda \(\approx 0.9167\), derecha \(\approx 1.0833\) y punto medio \(\approx 0.0417\).
+            El punto medio es la mejor aproximación con diferencia.
+          </p>
+        </div>
+      </article>
+
+      <!-- Ejemplo 2 -->
+      <article class="example">
+        <h3>Ejemplo 2: función decreciente</h3>
+        <p class="statement">
+          Aproxime \(\displaystyle\int_1^3 \frac{1}{x}\,dx\) usando \(L_5\), \(R_5\) y \(M_5\).
+        </p>
+
+        <div class="step">
+          <p class="step-title">Paso 1. Ancho de cada subintervalo</p>
+          \[ \Delta x = \frac{3-1}{5} = 0.4 \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 2. Puntos y valores de la función</p>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>\(i\)</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+              <tbody>
+                <tr><th>\(x_i\)</th><td>1</td><td>1.4</td><td>1.8</td><td>2.2</td><td>2.6</td><td>3</td></tr>
+                <tr><th>\(f(x_i)\)</th><td>1</td><td>0.71429</td><td>0.55556</td><td>0.45455</td><td>0.38462</td><td>0.33333</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Subintervalo</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+              <tbody>
+                <tr><th>\(\bar{x}_i\)</th><td>1.2</td><td>1.6</td><td>2.0</td><td>2.4</td><td>2.8</td></tr>
+                <tr><th>\(f(\bar{x}_i)\)</th><td>0.83333</td><td>0.625</td><td>0.5</td><td>0.41667</td><td>0.35714</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 3. Suma izquierda</p>
+          \[ L_5 = 0.4\,[\,1 + 0.71429 + 0.55556 + 0.45455 + 0.38462\,] = 0.4 \cdot 3.10902 \approx 1.2436 \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 4. Suma derecha</p>
+          \[ R_5 = 0.4\,[\,0.71429 + 0.55556 + 0.45455 + 0.38462 + 0.33333\,] = 0.4 \cdot 2.44235 \approx 0.9769 \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 5. Suma de punto medio</p>
+          \[ M_5 = 0.4\,[\,0.83333 + 0.625 + 0.5 + 0.41667 + 0.35714\,] = 0.4 \cdot 2.73214 \approx 1.0929 \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 6. Valor exacto</p>
+          \[ \int_1^3 \frac{1}{x}\,dx = \Big[\ln|x|\Big]_1^3 = \ln 3 - \ln 1 = \ln 3 \approx 1.0986 \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Conclusión</p>
+          <p>
+            Ahora \(f(x)=1/x\) es <strong>decreciente</strong>, así que el orden se invierte respecto al ejemplo anterior:
+            \(R_5 < \ln 3 < L_5\). Los errores son: izquierda \(\approx 0.1450\), derecha \(\approx 0.1217\) y
+            punto medio \(\approx 0.0058\). De nuevo, el punto medio gana. Puedes comprobarlo en el visualizador
+            eligiendo \(1/x\), el intervalo \([1,3]\) y \(n=5\).
+          </p>
+        </div>
+      </article>
+    </section>
+
+    <!-- ===== NAVEGACIÓN ENTRE MÓDULOS ===== -->
+    <nav class="module-nav" aria-label="Navegación entre módulos">
+      <a href="../modulo-02-trapecio/index.html">Módulo 02: Regla del Trapecio →</a>
+    </nav>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Universidad Tecnológica de Pereira,2026.</p>
+    </div>
+  </footer>
+
+
+  <!-- =========================================================
+       JAVASCRIPT DEL MÓDULO
+       Se ejecuta cuando la página terminó de cargar (y también
+       KaTeX y Plotly, que están marcados con "defer").
+       ========================================================= -->
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+
+    // ---------- 1) Dibujar las fórmulas con KaTeX ----------
+    // \( ... \) = fórmula en línea,  \[ ... \] = fórmula centrada
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: '\\[', right: '\\]', display: true },
+        { left: '\\(', right: '\\)', display: false }
+      ]
+    });
+
+    // ---------- 2) Funciones que el estudiante puede elegir ----------
+    // f: la función.  F: su antiderivada (para calcular el valor exacto).
+    // a, b: intervalo por defecto.  dominio: condición sobre a para que f exista en [a,b].
+    var FUNCIONES = {
+      cuadrada:    { f: function (x) { return x * x; },
+                     F: function (x) { return Math.pow(x, 3) / 3; },
+                     a: '0', b: '2' },
+      inversa:     { f: function (x) { return 1 / x; },
+                     F: function (x) { return Math.log(x); },
+                     a: '1', b: '3',
+                     dominio: function (a) { return a > 0; },
+                     ayuda: 'Para 1/x el intervalo debe estar en x > 0.' },
+      raiz:        { f: function (x) { return Math.sqrt(x); },
+                     F: function (x) { return (2 / 3) * Math.pow(x, 1.5); },
+                     a: '0', b: '4',
+                     dominio: function (a) { return a >= 0; },
+                     ayuda: 'Para √x se necesita a ≥ 0.' },
+      exponencial: { f: function (x) { return Math.exp(x); },
+                     F: function (x) { return Math.exp(x); },
+                     a: '0', b: '1' },
+      seno:        { f: function (x) { return Math.sin(x); },
+                     F: function (x) { return -Math.cos(x); },
+                     a: '0', b: 'π' }
+    };
+
+    // Colores de las gráficas (tomados de la paleta del sitio)
+    var COLOR = {
+      curva: '#2A1F30',
+      relleno: 'rgba(230,172,223,0.45)',
+      borde: '#B85FAA',
+      izq: '#B85FAA',
+      der: '#8F7A8F',
+      medio: '#2A1F30',
+      exacto: '#5B4A63',
+      rejilla: '#EDDFED'
+    };
+
+    // ---------- 3) Referencias a los elementos de la página ----------
+    var selFuncion = document.getElementById('sel-funcion');
+    var inA = document.getElementById('in-a');
+    var inB = document.getElementById('in-b');
+    var inN = document.getElementById('in-n');
+    var nValor = document.getElementById('n-valor');
+    var msgError = document.getElementById('mensaje-error');
+
+    // ---------- 4) Funciones de cálculo ----------
+
+    // Convierte el texto escrito en un número. Acepta "pi" o "π" y comas decimales.
+    function leerNumero(texto) {
+      var t = texto.trim().toLowerCase().replace(',', '.');
+      if (t === 'pi' || t === 'π') { return Math.PI; }
+      if (t === '') { return NaN; }
+      return Number(t);
+    }
+
+    // Suma de Riemann. metodo: 'izq' | 'der' | 'medio'
+    // Es la fórmula del taller: suma de f(punto elegido) multiplicada por Δx.
+    function sumaRiemann(f, a, b, n, metodo) {
+      var dx = (b - a) / n;
+      var suma = 0;
+      for (var i = 0; i < n; i++) {
+        var x;
+        if (metodo === 'izq') { x = a + i * dx; }             // extremo izquierdo
+        else if (metodo === 'der') { x = a + (i + 1) * dx; }  // extremo derecho
+        else { x = a + (i + 0.5) * dx; }                      // punto medio
+        suma += f(x);
+      }
+      return suma * dx;
+    }
+
+    // Lee los controles y verifica que los datos sean válidos.
+    // Devuelve null (y muestra un mensaje) si algo está mal.
+    function leerControles() {
+      var fun = FUNCIONES[selFuncion.value];
+      var a = leerNumero(inA.value);
+      var b = leerNumero(inB.value);
+      var n = parseInt(inN.value, 10);
+      var metodo = document.querySelector('input[name="metodo"]:checked').value;
+
+      if (!isFinite(a) || !isFinite(b)) {
+        msgError.textContent = 'Escribe números válidos en el intervalo.';
+        return null;
+      }
+      if (a >= b) {
+        msgError.textContent = 'El límite a debe ser menor que b.';
+        return null;
+      }
+      if (fun.dominio && !fun.dominio(a)) {
+        msgError.textContent = fun.ayuda;
+        return null;
+      }
+      msgError.textContent = '';
+      return { fun: fun, f: fun.f, F: fun.F, a: a, b: b, n: n, metodo: metodo };
+    }
+
+    // ---------- 5) Gráfica principal: curva + rectángulos ----------
+    function dibujarRectangulos(d) {
+      var dx = (d.b - d.a) / d.n;
+
+      // Curva suave: 400 puntos
+      var cx = [], cy = [];
+      for (var k = 0; k <= 400; k++) {
+        var xx = d.a + (d.b - d.a) * k / 400;
+        cx.push(xx);
+        cy.push(d.f(xx));
+      }
+
+      // Rectángulos: cada uno son 4 esquinas; "null" separa un rectángulo del siguiente.
+      var rx = [], ry = [];
+      // Puntos donde se evalúa la función (solo si n es pequeño, para no saturar)
+      var px = [], py = [];
+      for (var i = 0; i < d.n; i++) {
+        var x0 = d.a + i * dx;   // extremo izquierdo del rectángulo i
+        var x1 = x0 + dx;        // extremo derecho
+        var xs;
+        if (d.metodo === 'izq') { xs = x0; }
+        else if (d.metodo === 'der') { xs = x1; }
+        else { xs = (x0 + x1) / 2; }
+        var h = d.f(xs);
+        rx.push(x0, x0, x1, x1, x0, null);
+        ry.push(0, h, h, 0, 0, null);
+        px.push(xs);
+        py.push(h);
+      }
+
+      var trazas = [
+        { x: rx, y: ry, mode: 'lines', fill: 'toself', fillcolor: COLOR.relleno,
+          line: { color: COLOR.borde, width: 1 }, name: 'Rectángulos', hoverinfo: 'skip' },
+        { x: cx, y: cy, mode: 'lines', line: { color: COLOR.curva, width: 3 }, name: 'f(x)' }
+      ];
+      if (d.n <= 40) {
+        trazas.push({ x: px, y: py, mode: 'markers', marker: { color: COLOR.curva, size: 6 },
+                      name: 'Punto de evaluación' });
+      }
+
+      var layout = {
+        margin: { l: 45, r: 15, t: 10, b: 45 },
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        font: { family: 'Manrope, sans-serif', color: '#2A1F30' },
+        xaxis: { title: 'x', gridcolor: COLOR.rejilla, zeroline: true, zerolinecolor: '#5B4A63' },
+        yaxis: { gridcolor: COLOR.rejilla, zeroline: true, zerolinecolor: '#5B4A63' },
+        legend: { orientation: 'h', y: -0.25 }
+      };
+
+      Plotly.react('grafica-riemann', trazas, layout, { responsive: true, displaylogo: false });
+    }
+
+    // ---------- 6) Gráfica de convergencia: sumas para n = 1..100 ----------
+    function dibujarConvergencia(d, exacto) {
+      var ns = [], L = [], R = [], M = [], E = [];
+      for (var n = 1; n <= 100; n++) {
+        ns.push(n);
+        L.push(sumaRiemann(d.f, d.a, d.b, n, 'izq'));
+        R.push(sumaRiemann(d.f, d.a, d.b, n, 'der'));
+        M.push(sumaRiemann(d.f, d.a, d.b, n, 'medio'));
+        E.push(exacto);
+      }
+      var trazas = [
+        { x: ns, y: L, mode: 'lines', name: 'Izquierda', line: { color: COLOR.izq, width: 2.5 } },
+        { x: ns, y: R, mode: 'lines', name: 'Derecha', line: { color: COLOR.der, width: 2.5 } },
+        { x: ns, y: M, mode: 'lines', name: 'Punto medio', line: { color: COLOR.medio, width: 2.5 } },
+        { x: ns, y: E, mode: 'lines', name: 'Valor exacto', line: { color: COLOR.exacto, width: 2, dash: 'dash' } }
+      ];
+      var layout = {
+        margin: { l: 50, r: 15, t: 10, b: 45 },
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        font: { family: 'Manrope, sans-serif', color: '#2A1F30' },
+        xaxis: { title: 'n (número de rectángulos)', gridcolor: COLOR.rejilla },
+        yaxis: { title: 'Aproximación', gridcolor: COLOR.rejilla },
+        legend: { orientation: 'h', y: -0.35 },
+        // Línea vertical punteada en el n actual
+        shapes: [{ type: 'line', x0: d.n, x1: d.n, y0: 0, y1: 1, yref: 'paper',
+                   line: { color: '#BDA8BD', width: 2, dash: 'dot' } }]
+      };
+      Plotly.react('grafica-convergencia', trazas, layout, { responsive: true, displaylogo: false });
+    }
+
+    // ---------- 7) Tabla de convergencia ----------
+    function llenarTabla(d) {
+      var cuerpo = document.querySelector('#tabla-convergencia tbody');
+      var filas = '';
+      [2, 4, 8, 16, 32, 64, 128].forEach(function (n) {
+        filas += '<tr><td>' + n + '</td>' +
+          '<td>' + sumaRiemann(d.f, d.a, d.b, n, 'izq').toFixed(5) + '</td>' +
+          '<td>' + sumaRiemann(d.f, d.a, d.b, n, 'der').toFixed(5) + '</td>' +
+          '<td>' + sumaRiemann(d.f, d.a, d.b, n, 'medio').toFixed(5) + '</td></tr>';
+      });
+      cuerpo.innerHTML = filas;
+    }
+
+    // ---------- 8) Actualizar todo cuando cambia algún control ----------
+    function actualizar() {
+      nValor.textContent = inN.value;
+      var d = leerControles();
+      if (d === null) { return; }
+
+      var L = sumaRiemann(d.f, d.a, d.b, d.n, 'izq');
+      var R = sumaRiemann(d.f, d.a, d.b, d.n, 'der');
+      var M = sumaRiemann(d.f, d.a, d.b, d.n, 'medio');
+      var exacto = d.F(d.b) - d.F(d.a);          // Teorema Fundamental del Cálculo
+      var elegido = { izq: L, der: R, medio: M }[d.metodo];
+
+      document.getElementById('v-izq').textContent = L.toFixed(5);
+      document.getElementById('v-der').textContent = R.toFixed(5);
+      document.getElementById('v-medio').textContent = M.toFixed(5);
+      document.getElementById('v-exacto').textContent = exacto.toFixed(5);
+      document.getElementById('v-error').textContent = Math.abs(elegido - exacto).toFixed(5);
+
+      // Resaltar la tarjeta del método elegido
+      ['izq', 'der', 'medio'].forEach(function (m) {
+        document.getElementById('res-' + m).classList.toggle('is-selected', m === d.metodo);
+      });
+
+      dibujarRectangulos(d);
+      dibujarConvergencia(d, exacto);
+      llenarTabla(d);
+    }
+
+    // Al cambiar de función, poner su intervalo por defecto
+    selFuncion.addEventListener('change', function () {
+      var fun = FUNCIONES[selFuncion.value];
+      inA.value = fun.a;
+      inB.value = fun.b;
+      actualizar();
+    });
+
+    // Cualquier otro control actualiza las gráficas
+    inA.addEventListener('input', actualizar);
+    inB.addEventListener('input', actualizar);
+    inN.addEventListener('input', actualizar);
+    document.querySelectorAll('input[name="metodo"]').forEach(function (r) {
+      r.addEventListener('change', actualizar);
+    });
+
+    // Dibujo inicial
+    actualizar();
+  });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Módulo 4: Regla de Simpson</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../assets/css/styles.css">
+  <link rel="stylesheet" href="../assets/css/module.css">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <script defer src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+
+  <header class="module-header">
+    <div class="container">
+      <a class="back-link" href="../index.html">← Volver al inicio</a>
+      <div><span class="module-chip">Módulo 04</span></div>
+      <h1>Regla de Simpson</h1>
+      <p class="lead">
+        En vez de aproximar cada tramo con una línea recta, Simpson ajusta una parábola cada dos
+        franjas. Como una parábola sigue la curvatura real de la función, el resultado suele ser
+        muchísimo más preciso que el trapecio o el punto medio, incluso con pocas divisiones.
+      </p>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <nav class="toc" aria-label="Contenido de la página">
+      <a href="#teoria">Teoría</a>
+      <a href="#visualizador">Visualizador interactivo</a>
+      <a href="#ejemplos">Ejemplos resueltos</a>
+    </nav>
+
+    <section class="content-section" id="teoria">
+      <h2>Ajustar parábolas en vez de rectas</h2>
+      <p>
+        Simpson toma los puntos de a pares de franjas: \(x_0,x_1,x_2\) forman la primera parábola,
+        \(x_2,x_3,x_4\) la segunda, y así sucesivamente. Por eso <strong>n debe ser par</strong>:
+        se necesita un número par de franjas para agruparlas de dos en dos.
+      </p>
+
+      <div class="formula-box">
+        \[ S_n = \frac{\Delta x}{3}\Big[f(x_0) + 4\!\!\sum_{i \text{ impar}}\!\! f(x_i) + 2\!\!\sum_{i \text{ par, interior}}\!\! f(x_i) + f(x_n)\Big] \]
+      </div>
+
+      <p>
+        Los coeficientes siguen el patrón \(1,4,2,4,2,\dots,4,2,4,1\): los puntos en posición impar
+        (los "del medio" de cada pareja de franjas) pesan 4 veces, los pares interiores pesan 2, y
+        los extremos pesan 1.
+      </p>
+
+      <div class="callout">
+        <p class="callout-title">Dato sorprendente</p>
+        <p>
+          Como una parábola es un polinomio de grado 2, y Simpson en realidad reproduce el
+          comportamiento hasta polinomios de grado 3 sin error, la Regla de Simpson da el
+          <strong>valor exacto</strong> cuando \(f\) es un polinomio de grado 3 o menor,
+          sin importar cuántas franjas uses. Lo vas a comprobar en el Ejemplo 1.
+        </p>
+      </div>
+    </section>
+
+    <section class="content-section" id="visualizador">
+      <h2>Visualizador interactivo</h2>
+      <p>
+        El deslizador solo permite valores pares de \(n\), porque la regla los necesita para formar
+        las parejas de franjas.
+      </p>
+
+      <div class="viz-layout">
+        <div class="controls">
+          <div class="field">
+            <label for="sel-funcion">Función</label>
+            <select id="sel-funcion">
+              <option value="cuadrada">f(x) = x²</option>
+              <option value="inversa">f(x) = 1/x</option>
+              <option value="raiz">f(x) = √x</option>
+              <option value="exponencial">f(x) = eˣ</option>
+              <option value="seno">f(x) = sen x</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <span class="field-label">Intervalo [a, b]</span>
+            <div class="field-row">
+              <input type="text" id="in-a" inputmode="decimal" aria-label="Límite inferior a" value="0">
+              <input type="text" id="in-b" inputmode="decimal" aria-label="Límite superior b" value="2">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="in-n">Número de franjas (par): n = <span class="n-value" id="n-valor">4</span></label>
+            <input type="range" id="in-n" min="2" max="100" step="2" value="4">
+          </div>
+
+          <p class="error-msg" id="mensaje-error" role="alert"></p>
+        </div>
+
+        <div>
+          <div id="grafica-simpson" class="plot"></div>
+        </div>
+      </div>
+
+      <div class="results" id="resultados" aria-live="polite">
+        <div class="result-item"><span>Aproximación Sₙ</span><strong id="v-simpson">-</strong></div>
+        <div class="result-item"><span>Valor exacto</span><strong id="v-exacto">-</strong></div>
+        <div class="result-item"><span>Error absoluto</span><strong id="v-error">-</strong></div>
+      </div>
+
+      <h3>Convergencia al aumentar n</h3>
+      <p>Fíjate en la escala del eje vertical: Simpson suele converger tan rápido que el error
+        se vuelve casi invisible a partir de valores pequeños de \(n\).</p>
+      <div id="grafica-convergencia" class="plot plot-small"></div>
+
+      <div class="table-wrap">
+        <table class="data-table" id="tabla-convergencia">
+          <thead><tr><th>n</th><th>Sₙ</th><th>Error absoluto</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section" id="ejemplos">
+      <h2>Ejemplos resueltos paso a paso</h2>
+
+      <article class="example">
+        <h3>Ejemplo 1: precisión exacta en un polinomio</h3>
+        <p class="statement">Aproxime \(\displaystyle\int_0^2 x^2\,dx\) usando la regla de Simpson con \(n=4\).</p>
+
+        <div class="step">
+          <p class="step-title">Paso 1. Ancho de cada franja</p>
+          \[ \Delta x = \frac{2-0}{4} = 0.5 \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 2. Valores de la función (los mismos de los módulos anteriores)</p>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>\(i\)</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead>
+              <tbody>
+                <tr><th>\(x_i\)</th><td>0</td><td>0.5</td><td>1</td><td>1.5</td><td>2</td></tr>
+                <tr><th>\(f(x_i)\)</th><td>0</td><td>0.25</td><td>1</td><td>2.25</td><td>4</td></tr>
+                <tr><th>Peso</th><td>1</td><td>4</td><td>2</td><td>4</td><td>1</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 3. Aplicar la fórmula</p>
+          \[ S_4 = \frac{0.5}{3}\big[\,0 + 4(0.25) + 2(1) + 4(2.25) + 4\,\big] = \frac{0.5}{3}\cdot 16 = 2.6\overline{6} \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 4. Comparar con el valor exacto</p>
+          \[ \int_0^2 x^2\,dx = \frac{8}{3} = 2.6\overline{6} \]
+          <p>
+            ¡Coinciden exactamente! Como \(x^2\) es un polinomio de grado 2, Simpson no comete
+            ningún error, sin importar el valor de \(n\). Compáralo con el trapecio del Módulo 2
+            (\(T_4=2.75\), error \(0.0833\)) o el punto medio del Módulo 3 (\(M_4=2.625\), error \(0.0417\)).
+          </p>
+        </div>
+      </article>
+
+      <article class="example">
+        <h3>Ejemplo 2: una función no polinómica</h3>
+        <p class="statement">Aproxime \(\displaystyle\int_0^{\pi} \sin x\,dx\) usando \(S_4\).</p>
+
+        <div class="step">
+          <p class="step-title">Paso 1. Ancho de cada franja</p>
+          \[ \Delta x = \frac{\pi - 0}{4} = \frac{\pi}{4} \approx 0.7854 \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 2. Valores de la función</p>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>\(i\)</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead>
+              <tbody>
+                <tr><th>\(x_i\)</th><td>0</td><td>π/4</td><td>π/2</td><td>3π/4</td><td>π</td></tr>
+                <tr><th>\(f(x_i)\)</th><td>0</td><td>0.70711</td><td>1</td><td>0.70711</td><td>0</td></tr>
+                <tr><th>Peso</th><td>1</td><td>4</td><td>2</td><td>4</td><td>1</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 3. Aplicar la fórmula</p>
+          \[ S_4 = \frac{0.7854}{3}\big[\,0 + 4(0.70711) + 2(1) + 4(0.70711) + 0\,\big] \approx 0.2618 \cdot 7.6569 \approx 2.0046 \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 4. Comparar con el valor exacto</p>
+          \[ \int_0^{\pi} \sin x\,dx = \big[-\cos x\big]_0^{\pi} = 1+1 = 2 \]
+          <p>
+            El error es apenas \(\approx 0.0046\), con solo 4 franjas. Ese mismo nivel de precisión
+            le habría costado al trapecio o al punto medio muchas más divisiones. Pruébalo en el
+            visualizador: compara \(n=4\) en Simpson contra \(n=4\) en el Módulo 2.
+          </p>
+        </div>
+      </article>
+    </section>
+
+    <nav class="module-nav" aria-label="Navegación entre módulos">
+      <a href="../modulo-03-punto-medio/index.html">← Módulo 03: Regla del Punto Medio</a>
+      <a href="../modulo-05-integral-definida/index.html">Módulo 05: Integral Definida y Área →</a>
+    </nav>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Universidad Tecnológica de Pereira, Departamento de Matemáticas. Cálculo Integral + Desarrollo de Software, 2026-II.</p>
+    </div>
+  </footer>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: '\\[', right: '\\]', display: true },
+        { left: '\\(', right: '\\)', display: false }
+      ]
+    });
+
+    var FUNCIONES = {
+      cuadrada:    { f: function (x) { return x * x; },
+                     F: function (x) { return Math.pow(x, 3) / 3; },
+                     a: '0', b: '2' },
+      inversa:     { f: function (x) { return 1 / x; },
+                     F: function (x) { return Math.log(x); },
+                     a: '1', b: '3',
+                     dominio: function (a) { return a > 0; },
+                     ayuda: 'Para 1/x el intervalo debe estar en x > 0.' },
+      raiz:        { f: function (x) { return Math.sqrt(x); },
+                     F: function (x) { return (2 / 3) * Math.pow(x, 1.5); },
+                     a: '0', b: '4',
+                     dominio: function (a) { return a >= 0; },
+                     ayuda: 'Para √x se necesita a ≥ 0.' },
+      exponencial: { f: function (x) { return Math.exp(x); },
+                     F: function (x) { return Math.exp(x); },
+                     a: '0', b: '1' },
+      seno:        { f: function (x) { return Math.sin(x); },
+                     F: function (x) { return -Math.cos(x); },
+                     a: '0', b: 'π' }
+    };
+
+    var COLOR = {
+      curva: '#2A1F30', relleno: 'rgba(230,172,223,0.45)', borde: '#B85FAA',
+      serieA: '#8F3D9E', exacto: '#5B4A63', rejilla: '#EDDFED'
+    };
+
+    var selFuncion = document.getElementById('sel-funcion');
+    var inA = document.getElementById('in-a');
+    var inB = document.getElementById('in-b');
+    var inN = document.getElementById('in-n');
+    var nValor = document.getElementById('n-valor');
+    var msgError = document.getElementById('mensaje-error');
+
+    function leerNumero(texto) {
+      var t = texto.trim().toLowerCase().replace(/π/g, 'pi').replace(',', '.');
+      if (t === '') { return NaN; }
+      if (!/^[0-9pi.\s+\-*/()]+$/.test(t)) { return NaN; }
+      try {
+        var expr = t.replace(/pi/g, '(' + Math.PI + ')');
+        var val = Function('"use strict"; return (' + expr + ');')();
+        return (typeof val === 'number' && isFinite(val)) ? val : NaN;
+      } catch (e) {
+        return NaN;
+      }
+    }
+
+    // Regla de Simpson: requiere n par. Pesos 1,4,2,4,...,4,1.
+    function simpson(f, a, b, n) {
+      var dx = (b - a) / n;
+      var suma = f(a) + f(b);
+      for (var i = 1; i < n; i++) {
+        var peso = (i % 2 === 1) ? 4 : 2;
+        suma += peso * f(a + i * dx);
+      }
+      return (dx / 3) * suma;
+    }
+
+    function leerControles() {
+      var fun = FUNCIONES[selFuncion.value];
+      var a = leerNumero(inA.value);
+      var b = leerNumero(inB.value);
+      var n = parseInt(inN.value, 10);
+      if (n % 2 !== 0) { n += 1; } // por seguridad: el slider ya da pasos de 2
+
+      if (!isFinite(a) || !isFinite(b)) {
+        msgError.textContent = 'Escribe números válidos en el intervalo.';
+        return null;
+      }
+      if (a >= b) {
+        msgError.textContent = 'El límite a debe ser menor que b.';
+        return null;
+      }
+      if (fun.dominio && !fun.dominio(a)) {
+        msgError.textContent = fun.ayuda;
+        return null;
+      }
+      msgError.textContent = '';
+      return { f: fun.f, F: fun.F, a: a, b: b, n: n };
+    }
+
+    function dibujarParabolas(d) {
+      var dx = (d.b - d.a) / d.n;
+
+      var cx = [], cy = [];
+      for (var k = 0; k <= 400; k++) {
+        var xx = d.a + (d.b - d.a) * k / 400;
+        cx.push(xx); cy.push(d.f(xx));
+      }
+
+      // Por cada par de franjas, se ajusta una parábola que pasa por
+      // (x0,f0), (x1,f1), (x2,f2) y se dibuja con 20 puntos.
+      var px = [], py = [];
+      for (var i = 0; i < d.n; i += 2) {
+        var x0 = d.a + i * dx, x1 = x0 + dx, x2 = x0 + 2 * dx;
+        var y0 = d.f(x0), y1 = d.f(x1), y2 = d.f(x2);
+
+        // Interpolación de Lagrange sobre 3 puntos igualmente espaciados
+        function parabola(x) {
+          var t = (x - x1) / dx; // variable local centrada en x1, entre -1 y 1
+          return y1 + (y2 - y0) / 2 * t + (y2 - 2 * y1 + y0) / 2 * t * t;
+        }
+
+        for (var j = 0; j <= 20; j++) {
+          var xp = x0 + (x2 - x0) * j / 20;
+          px.push(xp); py.push(parabola(xp));
+        }
+        px.push(null); py.push(null);
+      }
+
+      // Área sombreada bajo las parábolas (mismo trazado, cerrado hacia y=0)
+      var areaX = [], areaY = [];
+      for (var i2 = 0; i2 < px.length; i2++) {
+        if (px[i2] === null) { areaX.push(d.a, null); areaY.push(0, null); continue; }
+        areaX.push(px[i2]); areaY.push(py[i2]);
+      }
+
+      var trazas = [
+        { x: areaX, y: areaY, mode: 'lines', fill: 'tozeroy', fillcolor: COLOR.relleno,
+          line: { color: 'rgba(0,0,0,0)' }, hoverinfo: 'skip', showlegend: false },
+        { x: px, y: py, mode: 'lines', line: { color: COLOR.serieA, width: 2.5 }, name: 'Parábolas de Simpson' },
+        { x: cx, y: cy, mode: 'lines', line: { color: COLOR.curva, width: 2, dash: 'dot' }, name: 'f(x)' }
+      ];
+
+      var layout = {
+        margin: { l: 45, r: 15, t: 10, b: 45 },
+        paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+        font: { family: 'Manrope, sans-serif', color: '#2A1F30' },
+        xaxis: { title: 'x', gridcolor: COLOR.rejilla, zeroline: true, zerolinecolor: '#5B4A63' },
+        yaxis: { gridcolor: COLOR.rejilla, zeroline: true, zerolinecolor: '#5B4A63' },
+        legend: { orientation: 'h', y: -0.25 }
+      };
+      Plotly.react('grafica-simpson', trazas, layout, { responsive: true, displaylogo: false });
+    }
+
+    function dibujarConvergencia(d, exacto) {
+      var ns = [], S = [], E = [];
+      for (var n = 2; n <= 100; n += 2) {
+        ns.push(n);
+        S.push(simpson(d.f, d.a, d.b, n));
+        E.push(exacto);
+      }
+      var trazas = [
+        { x: ns, y: S, mode: 'lines', name: 'Sₙ', line: { color: COLOR.serieA, width: 2.5 } },
+        { x: ns, y: E, mode: 'lines', name: 'Valor exacto', line: { color: COLOR.exacto, width: 2, dash: 'dash' } }
+      ];
+      var layout = {
+        margin: { l: 50, r: 15, t: 10, b: 45 },
+        paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+        font: { family: 'Manrope, sans-serif', color: '#2A1F30' },
+        xaxis: { title: 'n (número de franjas)', gridcolor: COLOR.rejilla },
+        yaxis: { title: 'Aproximación', gridcolor: COLOR.rejilla },
+        legend: { orientation: 'h', y: -0.35 },
+        shapes: [{ type: 'line', x0: d.n, x1: d.n, y0: 0, y1: 1, yref: 'paper',
+                   line: { color: '#BDA8BD', width: 2, dash: 'dot' } }]
+      };
+      Plotly.react('grafica-convergencia', trazas, layout, { responsive: true, displaylogo: false });
+    }
+
+    function llenarTabla(d, exacto) {
+      var cuerpo = document.querySelector('#tabla-convergencia tbody');
+      var filas = '';
+      [2, 4, 8, 16, 32, 64].forEach(function (n) {
+        var s = simpson(d.f, d.a, d.b, n);
+        filas += '<tr><td>' + n + '</td><td>' + s.toFixed(6) + '</td><td>' +
+          Math.abs(s - exacto).toFixed(6) + '</td></tr>';
+      });
+      cuerpo.innerHTML = filas;
+    }
+
+    function actualizar() {
+      // Aseguramos que el valor mostrado y usado sea siempre par
+      var n = parseInt(inN.value, 10);
+      if (n % 2 !== 0) { inN.value = n + 1; }
+      nValor.textContent = inN.value;
+
+      var d = leerControles();
+      if (d === null) { return; }
+
+      var S = simpson(d.f, d.a, d.b, d.n);
+      var exacto = d.F(d.b) - d.F(d.a);
+
+      document.getElementById('v-simpson').textContent = S.toFixed(6);
+      document.getElementById('v-exacto').textContent = exacto.toFixed(6);
+      document.getElementById('v-error').textContent = Math.abs(S - exacto).toFixed(6);
+
+      dibujarParabolas(d);
+      dibujarConvergencia(d, exacto);
+      llenarTabla(d, exacto);
+    }
+
+    selFuncion.addEventListener('change', function () {
+      var fun = FUNCIONES[selFuncion.value];
+      inA.value = fun.a; inB.value = fun.b;
+      actualizar();
+    });
+    inA.addEventListener('input', actualizar);
+    inB.addEventListener('input', actualizar);
+    inN.addEventListener('input', actualizar);
+
+    actualizar();
+  });
+  </script>
+
+</body>
+</html>

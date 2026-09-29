@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Módulo 3: Regla del Punto Medio</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../assets/css/styles.css">
+  <link rel="stylesheet" href="../assets/css/module.css">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <script defer src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+
+  <header class="module-header">
+    <div class="container">
+      <a class="back-link" href="../index.html">← Volver al inicio</a>
+      <div><span class="module-chip">Módulo 03</span></div>
+      <h1>Regla del Punto Medio</h1>
+      <p class="lead">
+        Aquí el rectángulo de cada franja no toma su altura del extremo izquierdo ni del derecho,
+        sino del centro. Ese pequeño cambio suele bastar para que el error se reduzca a la mitad
+        frente al trapecio, con el mismo número de divisiones.
+      </p>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <nav class="toc" aria-label="Contenido de la página">
+      <a href="#teoria">Teoría</a>
+      <a href="#visualizador">Visualizador interactivo</a>
+      <a href="#ejemplos">Ejemplos resueltos</a>
+    </nav>
+
+    <section class="content-section" id="teoria">
+      <h2>La altura que compensa</h2>
+      <p>
+        En cada subintervalo \([x_{i-1}, x_i]\) se evalúa la función en su punto central
+        \(\bar{x}_i\), y ese valor se usa como la altura del rectángulo.
+      </p>
+
+      <div class="formula-box">
+        \[ M_n = \Delta x \sum_{i=1}^{n} f(\bar{x}_i), \qquad \bar{x}_i = \frac{x_{i-1}+x_i}{2}, \qquad \Delta x = \frac{b-a}{n} \]
+      </div>
+
+      <p>
+        La razón por la que suele ganarle al trapecio es geométrica: dentro de cada franja, la parte
+        de la curva que queda por encima del rectángulo (cerca de un extremo) tiende a compensarse
+        con la parte que queda por debajo (cerca del otro extremo). Esa compensación es más completa
+        que la que logra una línea recta.
+      </p>
+
+      <div class="callout">
+        <p class="callout-title">Comparación real con el Módulo 2</p>
+        <p>
+          Para \(\displaystyle\int_0^2 x^2\,dx\) con \(n=4\): \(T_4=2.75\) (error \(0.0833\)) y
+          \(M_4=2.625\) (error \(0.0417\)). El punto medio comete casi exactamente
+          <strong>la mitad</strong> del error del trapecio, y además en dirección contraria:
+          el trapecio sobreestima y el punto medio subestima. Esta relación no es casualidad;
+          es la idea detrás de la Regla de Simpson del Módulo 4.
+        </p>
+      </div>
+    </section>
+
+    <section class="content-section" id="visualizador">
+      <h2>Visualizador interactivo</h2>
+      <p>Ajusta la función, el intervalo y \(n\). El punto marcado en cada rectángulo es su punto medio.</p>
+
+      <div class="viz-layout">
+        <div class="controls">
+          <div class="field">
+            <label for="sel-funcion">Función</label>
+            <select id="sel-funcion">
+              <option value="cuadrada">f(x) = x²</option>
+              <option value="inversa">f(x) = 1/x</option>
+              <option value="raiz">f(x) = √x</option>
+              <option value="exponencial">f(x) = eˣ</option>
+              <option value="seno">f(x) = sen x</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <span class="field-label">Intervalo [a, b]</span>
+            <div class="field-row">
+              <input type="text" id="in-a" inputmode="decimal" aria-label="Límite inferior a" value="0">
+              <input type="text" id="in-b" inputmode="decimal" aria-label="Límite superior b" value="2">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="in-n">Número de rectángulos: n = <span class="n-value" id="n-valor">4</span></label>
+            <input type="range" id="in-n" min="1" max="100" value="4">
+          </div>
+
+          <p class="error-msg" id="mensaje-error" role="alert"></p>
+        </div>
+
+        <div>
+          <div id="grafica-medio" class="plot"></div>
+        </div>
+      </div>
+
+      <div class="results" id="resultados" aria-live="polite">
+        <div class="result-item"><span>Aproximación Mₙ</span><strong id="v-medio">-</strong></div>
+        <div class="result-item"><span>Valor exacto</span><strong id="v-exacto">-</strong></div>
+        <div class="result-item"><span>Error absoluto</span><strong id="v-error">-</strong></div>
+      </div>
+
+      <h3>Convergencia al aumentar n</h3>
+      <div id="grafica-convergencia" class="plot plot-small"></div>
+
+      <div class="table-wrap">
+        <table class="data-table" id="tabla-convergencia">
+          <thead><tr><th>n</th><th>Mₙ</th><th>Error absoluto</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section" id="ejemplos">
+      <h2>Ejemplos resueltos paso a paso</h2>
+
+      <article class="example">
+        <h3>Ejemplo 1: comparar con el trapecio</h3>
+        <p class="statement">Calcule \(M_4\) para \(\displaystyle\int_0^2 x^2\,dx\).</p>
+
+        <div class="step">
+          <p class="step-title">Paso 1. Ancho de cada franja</p>
+          \[ \Delta x = \frac{2-0}{4} = 0.5 \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 2. Puntos medios y su valor en f</p>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Franja</th><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead>
+              <tbody>
+                <tr><th>\(\bar{x}_i\)</th><td>0.25</td><td>0.75</td><td>1.25</td><td>1.75</td></tr>
+                <tr><th>\(f(\bar{x}_i)\)</th><td>0.0625</td><td>0.5625</td><td>1.5625</td><td>3.0625</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 3. Aplicar la fórmula</p>
+          \[ M_4 = 0.5\,[\,0.0625+0.5625+1.5625+3.0625\,] = 0.5 \cdot 5.25 = 2.625 \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 4. Comparar con el valor exacto y con el trapecio</p>
+          \[ \int_0^2 x^2\,dx = \frac{8}{3} \approx 2.6667 \]
+          <p>
+            Error del punto medio: \(|2.625 - 2.6667| \approx 0.0417\). En el Módulo 2, el trapecio
+            tuvo un error de \(0.0833\): el doble. Como \(x^2\) es cóncava hacia arriba, el punto
+            medio subestima (al contrario que el trapecio, que sobreestimó).
+          </p>
+        </div>
+      </article>
+
+      <article class="example">
+        <h3>Ejemplo 2: función exponencial</h3>
+        <p class="statement">Calcule \(M_6\) para \(\displaystyle\int_0^1 e^x\,dx\).</p>
+
+        <div class="step">
+          <p class="step-title">Paso 1. Ancho de cada franja</p>
+          \[ \Delta x = \frac{1-0}{6} = \frac{1}{6} \approx 0.16667 \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 2. Puntos medios y su valor en f</p>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Franja</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr></thead>
+              <tbody>
+                <tr><th>\(\bar{x}_i\)</th><td>0.0833</td><td>0.25</td><td>0.4167</td><td>0.5833</td><td>0.75</td><td>0.9167</td></tr>
+                <tr><th>\(f(\bar{x}_i)\)</th><td>1.0869</td><td>1.2840</td><td>1.5169</td><td>1.7920</td><td>2.1170</td><td>2.5009</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 3. Aplicar la fórmula</p>
+          \[ M_6 = 0.16667\,[\,1.0869+1.2840+1.5169+1.7920+2.1170+2.5009\,] \approx 0.16667 \cdot 10.2977 \approx 1.7163 \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 4. Comparar con el valor exacto</p>
+          \[ \int_0^1 e^x\,dx = e^1 - e^0 = e - 1 \approx 1.7183 \]
+          <p>
+            El error es \(|1.7163 - 1.7183| \approx 0.0020\): muy pequeño, incluso con solo 6 franjas.
+            Esto confirma que \(e^x\), al ser una curva suave, se aproxima muy bien con el punto medio.
+          </p>
+        </div>
+      </article>
+    </section>
+
+    <nav class="module-nav" aria-label="Navegación entre módulos">
+      <a href="../modulo-02-trapecio/index.html">← Módulo 02: Regla del Trapecio</a>
+      <a href="../modulo-04-simpson/index.html">Módulo 04: Regla de Simpson →</a>
+    </nav>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Universidad Tecnológica de Pereira, Departamento de Matemáticas. Cálculo Integral + Desarrollo de Software, 2026-II.</p>
+    </div>
+  </footer>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: '\\[', right: '\\]', display: true },
+        { left: '\\(', right: '\\)', display: false }
+      ]
+    });
+
+    var FUNCIONES = {
+      cuadrada:    { f: function (x) { return x * x; },
+                     F: function (x) { return Math.pow(x, 3) / 3; },
+                     a: '0', b: '2' },
+      inversa:     { f: function (x) { return 1 / x; },
+                     F: function (x) { return Math.log(x); },
+                     a: '1', b: '3',
+                     dominio: function (a) { return a > 0; },
+                     ayuda: 'Para 1/x el intervalo debe estar en x > 0.' },
+      raiz:        { f: function (x) { return Math.sqrt(x); },
+                     F: function (x) { return (2 / 3) * Math.pow(x, 1.5); },
+                     a: '0', b: '4',
+                     dominio: function (a) { return a >= 0; },
+                     ayuda: 'Para √x se necesita a ≥ 0.' },
+      exponencial: { f: function (x) { return Math.exp(x); },
+                     F: function (x) { return Math.exp(x); },
+                     a: '0', b: '1' },
+      seno:        { f: function (x) { return Math.sin(x); },
+                     F: function (x) { return -Math.cos(x); },
+                     a: '0', b: 'π' }
+    };
+
+    var COLOR = {
+      curva: '#2A1F30', relleno: 'rgba(230,172,223,0.45)', borde: '#B85FAA',
+      serieA: '#2A1F30', exacto: '#5B4A63', rejilla: '#EDDFED'
+    };
+
+    var selFuncion = document.getElementById('sel-funcion');
+    var inA = document.getElementById('in-a');
+    var inB = document.getElementById('in-b');
+    var inN = document.getElementById('in-n');
+    var nValor = document.getElementById('n-valor');
+    var msgError = document.getElementById('mensaje-error');
+
+    function leerNumero(texto) {
+      var t = texto.trim().toLowerCase().replace(/π/g, 'pi').replace(',', '.');
+      if (t === '') { return NaN; }
+      if (!/^[0-9pi.\s+\-*/()]+$/.test(t)) { return NaN; }
+      try {
+        var expr = t.replace(/pi/g, '(' + Math.PI + ')');
+        var val = Function('"use strict"; return (' + expr + ');')();
+        return (typeof val === 'number' && isFinite(val)) ? val : NaN;
+      } catch (e) {
+        return NaN;
+      }
+    }
+
+    // Regla del punto medio: Mn = dx * suma de f evaluada en el centro de cada franja
+    function puntoMedio(f, a, b, n) {
+      var dx = (b - a) / n;
+      var suma = 0;
+      for (var i = 0; i < n; i++) {
+        suma += f(a + (i + 0.5) * dx);
+      }
+      return suma * dx;
+    }
+
+    function leerControles() {
+      var fun = FUNCIONES[selFuncion.value];
+      var a = leerNumero(inA.value);
+      var b = leerNumero(inB.value);
+      var n = parseInt(inN.value, 10);
+
+      if (!isFinite(a) || !isFinite(b)) {
+        msgError.textContent = 'Escribe números válidos en el intervalo.';
+        return null;
+      }
+      if (a >= b) {
+        msgError.textContent = 'El límite a debe ser menor que b.';
+        return null;
+      }
+      if (fun.dominio && !fun.dominio(a)) {
+        msgError.textContent = fun.ayuda;
+        return null;
+      }
+      msgError.textContent = '';
+      return { f: fun.f, F: fun.F, a: a, b: b, n: n };
+    }
+
+    function dibujarRectangulos(d) {
+      var dx = (d.b - d.a) / d.n;
+
+      var cx = [], cy = [];
+      for (var k = 0; k <= 400; k++) {
+        var xx = d.a + (d.b - d.a) * k / 400;
+        cx.push(xx); cy.push(d.f(xx));
+      }
+
+      var rx = [], ry = [], px = [], py = [];
+      for (var i = 0; i < d.n; i++) {
+        var x0 = d.a + i * dx, x1 = x0 + dx;
+        var xm = (x0 + x1) / 2;
+        var h = d.f(xm);
+        rx.push(x0, x0, x1, x1, x0, null);
+        ry.push(0, h, h, 0, 0, null);
+        px.push(xm); py.push(h);
+      }
+
+      var trazas = [
+        { x: rx, y: ry, mode: 'lines', fill: 'toself', fillcolor: COLOR.relleno,
+          line: { color: COLOR.borde, width: 1 }, name: 'Rectángulos', hoverinfo: 'skip' },
+        { x: cx, y: cy, mode: 'lines', line: { color: COLOR.curva, width: 3 }, name: 'f(x)' }
+      ];
+      if (d.n <= 40) {
+        trazas.push({ x: px, y: py, mode: 'markers', marker: { color: COLOR.curva, size: 6 },
+                      name: 'Punto medio' });
+      }
+
+      var layout = {
+        margin: { l: 45, r: 15, t: 10, b: 45 },
+        paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+        font: { family: 'Manrope, sans-serif', color: '#2A1F30' },
+        xaxis: { title: 'x', gridcolor: COLOR.rejilla, zeroline: true, zerolinecolor: '#5B4A63' },
+        yaxis: { gridcolor: COLOR.rejilla, zeroline: true, zerolinecolor: '#5B4A63' },
+        legend: { orientation: 'h', y: -0.25 }
+      };
+      Plotly.react('grafica-medio', trazas, layout, { responsive: true, displaylogo: false });
+    }
+
+    function dibujarConvergencia(d, exacto) {
+      var ns = [], M = [], E = [];
+      for (var n = 1; n <= 100; n++) {
+        ns.push(n);
+        M.push(puntoMedio(d.f, d.a, d.b, n));
+        E.push(exacto);
+      }
+      var trazas = [
+        { x: ns, y: M, mode: 'lines', name: 'Mₙ', line: { color: COLOR.serieA, width: 2.5 } },
+        { x: ns, y: E, mode: 'lines', name: 'Valor exacto', line: { color: COLOR.exacto, width: 2, dash: 'dash' } }
+      ];
+      var layout = {
+        margin: { l: 50, r: 15, t: 10, b: 45 },
+        paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+        font: { family: 'Manrope, sans-serif', color: '#2A1F30' },
+        xaxis: { title: 'n (número de rectángulos)', gridcolor: COLOR.rejilla },
+        yaxis: { title: 'Aproximación', gridcolor: COLOR.rejilla },
+        legend: { orientation: 'h', y: -0.35 },
+        shapes: [{ type: 'line', x0: d.n, x1: d.n, y0: 0, y1: 1, yref: 'paper',
+                   line: { color: '#BDA8BD', width: 2, dash: 'dot' } }]
+      };
+      Plotly.react('grafica-convergencia', trazas, layout, { responsive: true, displaylogo: false });
+    }
+
+    function llenarTabla(d, exacto) {
+      var cuerpo = document.querySelector('#tabla-convergencia tbody');
+      var filas = '';
+      [2, 4, 8, 16, 32, 64, 128].forEach(function (n) {
+        var m = puntoMedio(d.f, d.a, d.b, n);
+        filas += '<tr><td>' + n + '</td><td>' + m.toFixed(5) + '</td><td>' +
+          Math.abs(m - exacto).toFixed(5) + '</td></tr>';
+      });
+      cuerpo.innerHTML = filas;
+    }
+
+    function actualizar() {
+      nValor.textContent = inN.value;
+      var d = leerControles();
+      if (d === null) { return; }
+
+      var M = puntoMedio(d.f, d.a, d.b, d.n);
+      var exacto = d.F(d.b) - d.F(d.a);
+
+      document.getElementById('v-medio').textContent = M.toFixed(5);
+      document.getElementById('v-exacto').textContent = exacto.toFixed(5);
+      document.getElementById('v-error').textContent = Math.abs(M - exacto).toFixed(5);
+
+      dibujarRectangulos(d);
+      dibujarConvergencia(d, exacto);
+      llenarTabla(d, exacto);
+    }
+
+    selFuncion.addEventListener('change', function () {
+      var fun = FUNCIONES[selFuncion.value];
+      inA.value = fun.a; inB.value = fun.b;
+      actualizar();
+    });
+    inA.addEventListener('input', actualizar);
+    inB.addEventListener('input', actualizar);
+    inN.addEventListener('input', actualizar);
+
+    actualizar();
+  });
+  </script>
+
+</body>
+</html>

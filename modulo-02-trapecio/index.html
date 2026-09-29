@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Módulo 2: Regla del Trapecio</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../assets/css/styles.css">
+  <link rel="stylesheet" href="../assets/css/module.css">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <script defer src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+
+  <header class="module-header">
+    <div class="container">
+      <a class="back-link" href="../index.html">← Volver al inicio</a>
+      <div><span class="module-chip">Módulo 02</span></div>
+      <h1>Regla del Trapecio</h1>
+      <p class="lead">
+        En vez de aproximar cada franja con un rectángulo, la unimos con una línea recta entre
+        los dos extremos: eso forma un trapecio. Sumando el área de todos los trapecios se obtiene
+        una aproximación que, para la mayoría de funciones, es mejor que la de Riemann.
+      </p>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <nav class="toc" aria-label="Contenido de la página">
+      <a href="#teoria">Teoría</a>
+      <a href="#visualizador">Visualizador interactivo</a>
+      <a href="#ejemplos">Ejemplos resueltos</a>
+    </nav>
+
+    <section class="content-section" id="teoria">
+      <h2>De rectángulos a trapecios</h2>
+      <p>
+        En el Módulo 1 aproximamos cada franja con un rectángulo de altura fija. Aquí, en cambio,
+        trazamos el segmento de recta que une \((x_{i-1}, f(x_{i-1}))\) con \((x_i, f(x_i))\).
+        La figura que queda bajo esa recta es un trapecio, y su área es el promedio de sus dos
+        alturas multiplicado por el ancho de la base.
+      </p>
+
+      <div class="formula-box">
+        \[ T_n = \frac{\Delta x}{2}\Big[f(x_0) + 2\sum_{i=1}^{n-1} f(x_i) + f(x_n)\Big], \qquad \Delta x = \frac{b-a}{n} \]
+      </div>
+
+      <p>
+        Fíjate en el patrón de coeficientes: el primer y el último valor se cuentan una vez, y todos
+        los del medio se cuentan <strong>dos veces</strong>. Eso pasa porque cada punto interior es,
+        a la vez, el extremo derecho de un trapecio y el extremo izquierdo del siguiente.
+      </p>
+
+      <div class="callout">
+        <p class="callout-title">Un atajo útil</p>
+        <p>
+          El trapecio no es más que el promedio de la suma izquierda y la suma derecha del Módulo 1:
+        </p>
+        \[ T_n = \frac{L_n + R_n}{2} \]
+        <p>Lo vas a comprobar con números reales en el Ejemplo 1.</p>
+      </div>
+
+      <h3>¿Cuándo sobreestima y cuándo subestima?</h3>
+      <p>
+        Depende de la concavidad de \(f\). Si la curva es <strong>cóncava hacia arriba</strong>
+        (como \(x^2\)), la recta del trapecio queda por encima de la curva, así que \(T_n\)
+        <strong>sobreestima</strong> el área real. Si es <strong>cóncava hacia abajo</strong>
+        (como \(\sin x\) en \([0,\pi]\)), la recta queda por debajo, y \(T_n\) <strong>subestima</strong>
+        el área. Vas a ver ambos casos en los ejemplos.
+      </p>
+    </section>
+
+    <section class="content-section" id="visualizador">
+      <h2>Visualizador interactivo</h2>
+      <p>
+        Ajusta la función, el intervalo y el número de trapecios \(n\). Observa cómo las líneas
+        rectas se acercan a la curva a medida que \(n\) aumenta.
+      </p>
+
+      <div class="viz-layout">
+        <div class="controls">
+          <div class="field">
+            <label for="sel-funcion">Función</label>
+            <select id="sel-funcion">
+              <option value="cuadrada">f(x) = x²</option>
+              <option value="inversa">f(x) = 1/x</option>
+              <option value="raiz">f(x) = √x</option>
+              <option value="exponencial">f(x) = eˣ</option>
+              <option value="seno">f(x) = sen x</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <span class="field-label">Intervalo [a, b]</span>
+            <div class="field-row">
+              <input type="text" id="in-a" inputmode="decimal" aria-label="Límite inferior a" value="0">
+              <input type="text" id="in-b" inputmode="decimal" aria-label="Límite superior b" value="2">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="in-n">Número de trapecios: n = <span class="n-value" id="n-valor">4</span></label>
+            <input type="range" id="in-n" min="1" max="100" value="4">
+          </div>
+
+          <p class="error-msg" id="mensaje-error" role="alert"></p>
+        </div>
+
+        <div>
+          <div id="grafica-trapecio" class="plot"></div>
+        </div>
+      </div>
+
+      <div class="results" id="resultados" aria-live="polite">
+        <div class="result-item"><span>Aproximación Tₙ</span><strong id="v-trapecio">-</strong></div>
+        <div class="result-item"><span>Valor exacto</span><strong id="v-exacto">-</strong></div>
+        <div class="result-item"><span>Error absoluto</span><strong id="v-error">-</strong></div>
+      </div>
+
+      <h3>Convergencia al aumentar n</h3>
+      <div id="grafica-convergencia" class="plot plot-small"></div>
+
+      <div class="table-wrap">
+        <table class="data-table" id="tabla-convergencia">
+          <thead><tr><th>n</th><th>Tₙ</th><th>Error absoluto</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section" id="ejemplos">
+      <h2>Ejemplos resueltos paso a paso</h2>
+
+      <article class="example">
+        <h3>Ejemplo 1: función cóncava hacia arriba</h3>
+        <p class="statement">Aproxime \(\displaystyle\int_0^2 x^2\,dx\) usando la regla del trapecio con \(n=4\).</p>
+
+        <div class="step">
+          <p class="step-title">Paso 1. Ancho de cada franja</p>
+          \[ \Delta x = \frac{2-0}{4} = 0.5 \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 2. Valores de la función (los mismos del Módulo 1)</p>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>\(i\)</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead>
+              <tbody>
+                <tr><th>\(x_i\)</th><td>0</td><td>0.5</td><td>1</td><td>1.5</td><td>2</td></tr>
+                <tr><th>\(f(x_i)\)</th><td>0</td><td>0.25</td><td>1</td><td>2.25</td><td>4</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 3. Aplicar la fórmula</p>
+          \[ T_4 = \frac{0.5}{2}\big[\,0 + 2(0.25+1+2.25) + 4\,\big] = 0.25 \cdot 11 = 2.75 \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 4. Comparar con el atajo \(T_n=(L_n+R_n)/2\)</p>
+          <p>
+            En el Módulo 1 obtuvimos \(L_4=1.75\) y \(R_4=3.75\). Su promedio es
+            \((1.75+3.75)/2 = 2.75\): exactamente el mismo resultado.
+          </p>
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 5. Comparar con el valor exacto</p>
+          \[ \int_0^2 x^2\,dx = \frac{8}{3} \approx 2.6667 \]
+          <p>
+            Como \(x^2\) es cóncava hacia arriba, \(T_4=2.75\) <strong>sobreestima</strong> el valor
+            exacto. El error es \(|2.75 - 2.6667| \approx 0.0833\).
+          </p>
+        </div>
+      </article>
+
+      <article class="example">
+        <h3>Ejemplo 2: función cóncava hacia abajo</h3>
+        <p class="statement">Aproxime \(\displaystyle\int_0^{\pi/2} \sin x\,dx\) usando \(T_4\).</p>
+
+        <div class="step">
+          <p class="step-title">Paso 1. Ancho de cada franja</p>
+          \[ \Delta x = \frac{\pi/2 - 0}{4} = \frac{\pi}{8} \approx 0.3927 \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 2. Valores de la función</p>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>\(i\)</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead>
+              <tbody>
+                <tr><th>\(x_i\)</th><td>0</td><td>π/8</td><td>π/4</td><td>3π/8</td><td>π/2</td></tr>
+                <tr><th>\(f(x_i)\)</th><td>0</td><td>0.38268</td><td>0.70711</td><td>0.92388</td><td>1</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 3. Aplicar la fórmula</p>
+          \[ T_4 = \frac{0.3927}{2}\big[\,0 + 2(0.38268+0.70711+0.92388) + 1\,\big] \approx 0.1963 \cdot 5.0273 \approx 0.9871 \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 4. Comparar con el valor exacto</p>
+          \[ \int_0^{\pi/2} \sin x\,dx = \big[-\cos x\big]_0^{\pi/2} = -0+1 = 1 \]
+          <p>
+            Como \(\sin x\) es cóncava hacia abajo en este intervalo, \(T_4 \approx 0.9871\)
+            <strong>subestima</strong> el valor exacto. El error es \(\approx 0.0129\), más pequeño
+            que en el Ejemplo 1: el trapecio se ajusta mejor a curvas suaves como el seno.
+          </p>
+        </div>
+      </article>
+    </section>
+
+    <nav class="module-nav" aria-label="Navegación entre módulos">
+      <a href="../modulo-01-riemann/index.html">← Módulo 01: Sumas de Riemann</a>
+      <a href="../modulo-03-punto-medio/index.html">Módulo 03: Regla del Punto Medio →</a>
+    </nav>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Universidad Tecnológica de Pereira, 2026.</p>
+    </div>
+  </footer>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: '\\[', right: '\\]', display: true },
+        { left: '\\(', right: '\\)', display: false }
+      ]
+    });
+
+    var FUNCIONES = {
+      cuadrada:    { f: function (x) { return x * x; },
+                     F: function (x) { return Math.pow(x, 3) / 3; },
+                     a: '0', b: '2' },
+      inversa:     { f: function (x) { return 1 / x; },
+                     F: function (x) { return Math.log(x); },
+                     a: '1', b: '3',
+                     dominio: function (a) { return a > 0; },
+                     ayuda: 'Para 1/x el intervalo debe estar en x > 0.' },
+      raiz:        { f: function (x) { return Math.sqrt(x); },
+                     F: function (x) { return (2 / 3) * Math.pow(x, 1.5); },
+                     a: '0', b: '4',
+                     dominio: function (a) { return a >= 0; },
+                     ayuda: 'Para √x se necesita a ≥ 0.' },
+      exponencial: { f: function (x) { return Math.exp(x); },
+                     F: function (x) { return Math.exp(x); },
+                     a: '0', b: '1' },
+      seno:        { f: function (x) { return Math.sin(x); },
+                     F: function (x) { return -Math.cos(x); },
+                     a: '0', b: 'π' }
+    };
+
+    var COLOR = {
+      curva: '#2A1F30', relleno: 'rgba(230,172,223,0.45)', borde: '#B85FAA',
+      serieA: '#B85FAA', exacto: '#5B4A63', rejilla: '#EDDFED'
+    };
+
+    var selFuncion = document.getElementById('sel-funcion');
+    var inA = document.getElementById('in-a');
+    var inB = document.getElementById('in-b');
+    var inN = document.getElementById('in-n');
+    var nValor = document.getElementById('n-valor');
+    var msgError = document.getElementById('mensaje-error');
+
+    function leerNumero(texto) {
+      var t = texto.trim().toLowerCase().replace(/π/g, 'pi').replace(',', '.');
+      if (t === '') { return NaN; }
+      if (!/^[0-9pi.\s+\-*/()]+$/.test(t)) { return NaN; }
+      try {
+        var expr = t.replace(/pi/g, '(' + Math.PI + ')');
+        var val = Function('"use strict"; return (' + expr + ');')();
+        return (typeof val === 'number' && isFinite(val)) ? val : NaN;
+      } catch (e) {
+        return NaN;
+      }
+    }
+
+    // Regla del trapecio: Tn = (dx/2)[f(x0) + 2*suma interior + f(xn)]
+    function trapecio(f, a, b, n) {
+      var dx = (b - a) / n;
+      var suma = f(a) + f(b);
+      for (var i = 1; i < n; i++) {
+        suma += 2 * f(a + i * dx);
+      }
+      return (dx / 2) * suma;
+    }
+
+    function leerControles() {
+      var fun = FUNCIONES[selFuncion.value];
+      var a = leerNumero(inA.value);
+      var b = leerNumero(inB.value);
+      var n = parseInt(inN.value, 10);
+
+      if (!isFinite(a) || !isFinite(b)) {
+        msgError.textContent = 'Escribe números válidos en el intervalo.';
+        return null;
+      }
+      if (a >= b) {
+        msgError.textContent = 'El límite a debe ser menor que b.';
+        return null;
+      }
+      if (fun.dominio && !fun.dominio(a)) {
+        msgError.textContent = fun.ayuda;
+        return null;
+      }
+      msgError.textContent = '';
+      return { f: fun.f, F: fun.F, a: a, b: b, n: n };
+    }
+
+    function dibujarTrapecios(d) {
+      var dx = (d.b - d.a) / d.n;
+
+      var cx = [], cy = [];
+      for (var k = 0; k <= 400; k++) {
+        var xx = d.a + (d.b - d.a) * k / 400;
+        cx.push(xx); cy.push(d.f(xx));
+      }
+
+      // Cada trapecio: base en y=0, sube hasta f(x0), línea recta hasta f(x1), baja a y=0
+      var tx = [], ty = [];
+      for (var i = 0; i < d.n; i++) {
+        var x0 = d.a + i * dx, x1 = x0 + dx;
+        var y0 = d.f(x0), y1 = d.f(x1);
+        tx.push(x0, x0, x1, x1, x0, null);
+        ty.push(0, y0, y1, 0, 0, null);
+      }
+
+      var trazas = [
+        { x: tx, y: ty, mode: 'lines', fill: 'toself', fillcolor: COLOR.relleno,
+          line: { color: COLOR.borde, width: 1.5 }, name: 'Trapecios', hoverinfo: 'skip' },
+        { x: cx, y: cy, mode: 'lines', line: { color: COLOR.curva, width: 3 }, name: 'f(x)' }
+      ];
+
+      var layout = {
+        margin: { l: 45, r: 15, t: 10, b: 45 },
+        paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+        font: { family: 'Manrope, sans-serif', color: '#2A1F30' },
+        xaxis: { title: 'x', gridcolor: COLOR.rejilla, zeroline: true, zerolinecolor: '#5B4A63' },
+        yaxis: { gridcolor: COLOR.rejilla, zeroline: true, zerolinecolor: '#5B4A63' },
+        legend: { orientation: 'h', y: -0.25 }
+      };
+      Plotly.react('grafica-trapecio', trazas, layout, { responsive: true, displaylogo: false });
+    }
+
+    function dibujarConvergencia(d, exacto) {
+      var ns = [], T = [], E = [];
+      for (var n = 1; n <= 100; n++) {
+        ns.push(n);
+        T.push(trapecio(d.f, d.a, d.b, n));
+        E.push(exacto);
+      }
+      var trazas = [
+        { x: ns, y: T, mode: 'lines', name: 'Tₙ', line: { color: COLOR.serieA, width: 2.5 } },
+        { x: ns, y: E, mode: 'lines', name: 'Valor exacto', line: { color: COLOR.exacto, width: 2, dash: 'dash' } }
+      ];
+      var layout = {
+        margin: { l: 50, r: 15, t: 10, b: 45 },
+        paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+        font: { family: 'Manrope, sans-serif', color: '#2A1F30' },
+        xaxis: { title: 'n (número de trapecios)', gridcolor: COLOR.rejilla },
+        yaxis: { title: 'Aproximación', gridcolor: COLOR.rejilla },
+        legend: { orientation: 'h', y: -0.35 },
+        shapes: [{ type: 'line', x0: d.n, x1: d.n, y0: 0, y1: 1, yref: 'paper',
+                   line: { color: '#BDA8BD', width: 2, dash: 'dot' } }]
+      };
+      Plotly.react('grafica-convergencia', trazas, layout, { responsive: true, displaylogo: false });
+    }
+
+    function llenarTabla(d, exacto) {
+      var cuerpo = document.querySelector('#tabla-convergencia tbody');
+      var filas = '';
+      [2, 4, 8, 16, 32, 64, 128].forEach(function (n) {
+        var t = trapecio(d.f, d.a, d.b, n);
+        filas += '<tr><td>' + n + '</td><td>' + t.toFixed(5) + '</td><td>' +
+          Math.abs(t - exacto).toFixed(5) + '</td></tr>';
+      });
+      cuerpo.innerHTML = filas;
+    }
+
+    function actualizar() {
+      nValor.textContent = inN.value;
+      var d = leerControles();
+      if (d === null) { return; }
+
+      var T = trapecio(d.f, d.a, d.b, d.n);
+      var exacto = d.F(d.b) - d.F(d.a);
+
+      document.getElementById('v-trapecio').textContent = T.toFixed(5);
+      document.getElementById('v-exacto').textContent = exacto.toFixed(5);
+      document.getElementById('v-error').textContent = Math.abs(T - exacto).toFixed(5);
+
+      dibujarTrapecios(d);
+      dibujarConvergencia(d, exacto);
+      llenarTabla(d, exacto);
+    }
+
+    selFuncion.addEventListener('change', function () {
+      var fun = FUNCIONES[selFuncion.value];
+      inA.value = fun.a; inB.value = fun.b;
+      actualizar();
+    });
+    inA.addEventListener('input', actualizar);
+    inB.addEventListener('input', actualizar);
+    inN.addEventListener('input', actualizar);
+
+    actualizar();
+  });
+  </script>
+
+</body>
+</html>

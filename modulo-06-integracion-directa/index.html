@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Módulo 6: Integración Directa</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../assets/css/styles.css">
+  <link rel="stylesheet" href="../assets/css/module.css">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <script defer src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
+  <style>
+    /* Solo se usa en este módulo: mostrar/ocultar la fórmula del ejemplo elegido */
+    .formula-switch { display: none; }
+    .formula-switch.activa { display: block; }
+  </style>
+</head>
+<body>
+
+  <header class="module-header">
+    <div class="container">
+      <a class="back-link" href="../index.html">← Volver al inicio</a>
+      <div><span class="module-chip">Módulo 06</span></div>
+      <h1>Integración Directa</h1>
+      <p class="lead">
+        Es el primero de los 9 métodos de integración indefinida: aplicar directamente las reglas
+        básicas de antiderivadas, sin necesidad de sustituciones ni trucos adicionales.
+      </p>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <nav class="toc" aria-label="Contenido de la página">
+      <a href="#teoria">Teoría</a>
+      <a href="#ejemplos">Ejemplos resueltos</a>
+      <a href="#visualizador">Visualizador interactivo</a>
+    </nav>
+
+    <section class="content-section" id="teoria">
+      <h2>Reglas básicas de antiderivación</h2>
+
+      <div class="concept-grid">
+        <div class="concept-card">
+          <h3>Regla de la potencia</h3>
+          \[ \int x^n\,dx = \frac{x^{n+1}}{n+1} + C, \quad n \neq -1 \]
+        </div>
+        <div class="concept-card">
+          <h3>Caso especial n = −1</h3>
+          \[ \int \frac{dx}{x} = \ln|x| + C \]
+        </div>
+        <div class="concept-card">
+          <h3>Suma y múltiplo constante</h3>
+          \[ \int \big(f \pm g\big)\,dx = \int f\,dx \pm \int g\,dx \]
+          \[ \int k\,f(x)\,dx = k\int f(x)\,dx \]
+        </div>
+      </div>
+
+      <div class="callout">
+        <p class="callout-title">¿Por qué "+C"?</p>
+        <p>
+          La derivada de cualquier constante es cero, así que si \(F\) es una antiderivada de \(f\),
+          también lo es \(F(x)+C\) para cualquier número \(C\). Por eso una integral indefinida
+          representa toda una <strong>familia</strong> de funciones, no una sola. En el visualizador
+          puedes mover \(C\) y ver cómo la curva se desplaza verticalmente sin cambiar de forma.
+        </p>
+      </div>
+
+      <p>
+        La estrategia de este método es simple: si el integrando es una suma de potencias de \(x\)
+        (aunque estén escondidas dentro de raíces o fracciones), se separa en varias integrales más
+        simples y se aplica la regla de la potencia a cada una.
+      </p>
+    </section>
+
+    <section class="content-section" id="ejemplos">
+      <h2>Ejemplos resueltos paso a paso</h2>
+
+      <article class="example">
+        <h3>Ejemplo 1</h3>
+        <p class="statement">
+          \[ \int \left(x + 4\sqrt{x} - \frac{4}{x}\right) dx \]
+        </p>
+
+        <div class="step">
+          <p class="step-title">Paso 1. Separar la suma en tres integrales</p>
+          \[ \int x\,dx + \int 4\sqrt{x}\,dx - \int \frac{4}{x}\,dx \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 2. Reescribir \(\sqrt{x}\) como potencia</p>
+          \[ \sqrt{x} = x^{1/2} \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 3. Aplicar la regla de la potencia a cada término</p>
+          \[ \int x\,dx = \frac{x^2}{2}, \qquad
+             4\int x^{1/2}dx = 4\cdot\frac{x^{3/2}}{3/2} = \frac{8}{3}x^{3/2}, \qquad
+             -4\int \frac{dx}{x} = -4\ln|x| \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 4. Resultado final</p>
+          \[ \int \left(x + 4\sqrt{x} - \frac{4}{x}\right) dx = \frac{x^2}{2} + \frac{8}{3}x^{3/2} - 4\ln|x| + C \]
+        </div>
+      </article>
+
+      <article class="example">
+        <h3>Ejemplo 2</h3>
+        <p class="statement">
+          \[ \int \left(x - 1 - \frac{1}{x}\right) dx \]
+        </p>
+
+        <div class="step">
+          <p class="step-title">Paso 1. Separar la suma</p>
+          \[ \int x\,dx - \int 1\,dx - \int \frac{dx}{x} \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 2. Integrar cada término</p>
+          \[ \int x\,dx = \frac{x^2}{2}, \qquad \int 1\,dx = x, \qquad \int \frac{dx}{x} = \ln|x| \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 3. Resultado final</p>
+          \[ \int \left(x - 1 - \frac{1}{x}\right) dx = \frac{x^2}{2} - x - \ln|x| + C \]
+        </div>
+      </article>
+
+      <article class="example">
+        <h3>Ejemplo 3</h3>
+        <p class="statement">
+          \[ \int (x-1)(x+1)\,dx \]
+        </p>
+
+        <div class="step">
+          <p class="step-title">Paso 1. Expandir el producto antes de integrar</p>
+          \[ (x-1)(x+1) = x^2 - 1 \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 2. Integrar término a término</p>
+          \[ \int x^2\,dx = \frac{x^3}{3}, \qquad \int 1\,dx = x \]
+        </div>
+
+        <div class="step">
+          <p class="step-title">Paso 3. Resultado final</p>
+          \[ \int (x-1)(x+1)\,dx = \frac{x^3}{3} - x + C \]
+        </div>
+      </article>
+    </section>
+
+    <section class="content-section" id="visualizador">
+      <h2>Visualizador interactivo: f(x) y su antiderivada F(x)</h2>
+      <p>
+        Elige uno de los tres ejemplos y mueve el deslizador de \(C\) para ver cómo cambia
+        \(F(x)+C\) sin alterar la forma de la curva.
+      </p>
+
+      <div class="viz-layout">
+        <div class="controls">
+          <div class="field">
+            <label for="sel-ejemplo">Ejemplo</label>
+            <select id="sel-ejemplo">
+              <option value="ej1">Ejemplo 1: x + 4√x − 4/x</option>
+              <option value="ej2">Ejemplo 2: x − 1 − 1/x</option>
+              <option value="ej3">Ejemplo 3: (x−1)(x+1)</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <span class="field-label">f(x) y F(x) de este ejemplo</span>
+            <div class="formula-switch" id="formula-ej1">
+              \[ f(x) = x + 4\sqrt{x} - \tfrac{4}{x} \]
+              \[ F(x) = \tfrac{x^2}{2} + \tfrac{8}{3}x^{3/2} - 4\ln x \]
+            </div>
+            <div class="formula-switch" id="formula-ej2">
+              \[ f(x) = x - 1 - \tfrac{1}{x} \]
+              \[ F(x) = \tfrac{x^2}{2} - x - \ln x \]
+            </div>
+            <div class="formula-switch" id="formula-ej3">
+              \[ f(x) = (x-1)(x+1) \]
+              \[ F(x) = \tfrac{x^3}{3} - x \]
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="in-c">Constante de integración: C = <span class="n-value" id="c-valor">0</span></label>
+            <input type="range" id="in-c" min="-4" max="4" step="0.5" value="0">
+          </div>
+        </div>
+
+        <div>
+          <div id="grafica-directa" class="plot"></div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="module-nav" aria-label="Navegación entre módulos">
+      <a href="../modulo-05-integral-definida/index.html">← Módulo 05: Integral Definida y Área</a>
+      <a href="../modulo-07-sustitucion/index.html"> Módulo 07: Sustitución (Potencias) →</a>
+    </nav>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Universidad Tecnológica de Pereira,2026.</p>
+    </div>
+  </footer>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: '\\[', right: '\\]', display: true },
+        { left: '\\(', right: '\\)', display: false }
+      ]
+    });
+
+    // f: la función.  F: su antiderivada con C = 0.  min/max: dominio para graficar.
+    var EJEMPLOS = {
+      ej1: { f: function (x) { return x + 4 * Math.sqrt(x) - 4 / x; },
+             F: function (x) { return x * x / 2 + (8 / 3) * Math.pow(x, 1.5) - 4 * Math.log(x); },
+             min: 0.2, max: 6 },
+      ej2: { f: function (x) { return x - 1 - 1 / x; },
+             F: function (x) { return x * x / 2 - x - Math.log(x); },
+             min: 0.2, max: 6 },
+      ej3: { f: function (x) { return (x - 1) * (x + 1); },
+             F: function (x) { return Math.pow(x, 3) / 3 - x; },
+             min: -3, max: 3 }
+    };
+
+    var COLOR = { f: '#2A1F30', F: '#B85FAA', rejilla: '#EDDFED' };
+
+    var selEjemplo = document.getElementById('sel-ejemplo');
+    var inC = document.getElementById('in-c');
+    var cValor = document.getElementById('c-valor');
+
+    function mostrarFormula(clave) {
+      document.querySelectorAll('.formula-switch').forEach(function (div) {
+        div.classList.toggle('activa', div.id === 'formula-' + clave);
+      });
+    }
+
+    function dibujar() {
+      var ej = EJEMPLOS[selEjemplo.value];
+      var c = parseFloat(inC.value);
+      cValor.textContent = c;
+
+      var N = 300;
+      var xs = [], ysF = [], ysAntiderivada = [];
+      for (var k = 0; k <= N; k++) {
+        var x = ej.min + (ej.max - ej.min) * k / N;
+        xs.push(x);
+        ysF.push(ej.f(x));
+        ysAntiderivada.push(ej.F(x) + c);
+      }
+
+      var trazas = [
+        { x: xs, y: ysF, mode: 'lines', line: { color: COLOR.f, width: 3 }, name: 'f(x)' },
+        { x: xs, y: ysAntiderivada, mode: 'lines', line: { color: COLOR.F, width: 3 }, name: 'F(x) + C' }
+      ];
+      var layout = {
+        margin: { l: 50, r: 15, t: 10, b: 45 },
+        paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+        font: { family: 'Manrope, sans-serif', color: '#2A1F30' },
+        xaxis: { title: 'x', gridcolor: COLOR.rejilla, zeroline: true, zerolinecolor: '#5B4A63' },
+        yaxis: { gridcolor: COLOR.rejilla, zeroline: true, zerolinecolor: '#5B4A63' },
+        legend: { orientation: 'h', y: -0.25 }
+      };
+      Plotly.react('grafica-directa', trazas, layout, { responsive: true, displaylogo: false });
+    }
+
+    selEjemplo.addEventListener('change', function () {
+      mostrarFormula(selEjemplo.value);
+      dibujar();
+    });
+    inC.addEventListener('input', dibujar);
+
+    mostrarFormula(selEjemplo.value);
+    dibujar();
+  });
+  </script>
+
+</body>
+</html>

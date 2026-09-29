@@ -1,0 +1,416 @@
+/* =========================================================
+   ESTILOS DE PÁGINAS DE MÓDULO
+   Se usan junto con styles.css (que trae los colores y fuentes).
+   Todos los módulos reutilizan este mismo archivo.
+   ========================================================= */
+
+:root {
+  /* Tonos derivados de la paleta, más oscuros, para líneas y textos sobre fondo claro */
+  --color-orchid-dark: #B85FAA;
+  --color-mauve-dark: #8F7A8F;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ---------- Encabezado del módulo ---------- */
+.module-header {
+  background: var(--color-blush);
+  padding: 2rem 0 2.5rem;
+}
+
+.back-link {
+  display: inline-block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+}
+
+.back-link:hover {
+  color: var(--color-ink);
+  text-decoration: underline;
+}
+
+.module-chip {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  background: var(--color-orchid);
+  color: var(--color-ink);
+  padding: 0.25rem 0.7rem;
+  border-radius: 6px;
+  margin-bottom: 0.9rem;
+}
+
+.module-header h1 {
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+}
+
+.module-header .lead {
+  max-width: 62ch;
+  color: var(--color-ink-soft);
+  margin: 0;
+}
+
+/* ---------- Índice de la página ---------- */
+.toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--color-blush);
+}
+
+.toc a {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.35rem 0.9rem;
+  border: 1.5px solid var(--color-mauve);
+  border-radius: 999px;
+  color: var(--color-ink-soft);
+}
+
+.toc a:hover {
+  background: var(--color-blush);
+  color: var(--color-ink);
+}
+
+/* ---------- Secciones de contenido ---------- */
+.content-section {
+  margin: 3rem 0;
+}
+
+.content-section h2 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.content-section h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.6rem;
+}
+
+.content-section p {
+  max-width: 68ch;
+  color: var(--color-ink-soft);
+}
+
+.content-section strong {
+  color: var(--color-ink);
+}
+
+/* Caja para una fórmula importante */
+.formula-box {
+  background: var(--color-blush);
+  border-left: 4px solid var(--color-orchid);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 0.75rem 1.25rem;
+  margin: 1.25rem 0;
+  overflow-x: auto;
+}
+
+/* Tarjetas de conceptos (izquierda, derecha, punto medio) */
+.concept-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin: 1.25rem 0;
+}
+
+@media (min-width: 900px) {
+  .concept-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.concept-card {
+  border: 1.5px solid var(--color-mauve);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  background: var(--color-white);
+  overflow-x: auto;
+}
+
+.concept-card h3 {
+  margin-top: 0;
+}
+
+.concept-card p {
+  font-size: 0.92rem;
+  margin: 0.5rem 0 0;
+}
+
+/* Recuadro de nota importante */
+.callout {
+  background: var(--color-white);
+  border: 1.5px dashed var(--color-mauve);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  max-width: 68ch;
+}
+
+.callout p {
+  margin: 0.4rem 0 0;
+}
+
+.callout-title {
+  font-weight: 700;
+  color: var(--color-ink);
+  margin: 0;
+}
+
+/* ---------- Visualizador interactivo ---------- */
+.viz-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 960px) {
+  .viz-layout {
+    grid-template-columns: 300px 1fr;
+    align-items: start;
+  }
+}
+
+.controls {
+  background: var(--color-blush);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+
+.field {
+  margin-bottom: 1.1rem;
+}
+
+.field label,
+.field .field-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin-bottom: 0.4rem;
+}
+
+.field select,
+.field input[type="text"] {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 0.5rem 0.6rem;
+  border: 1.5px solid var(--color-mauve);
+  border-radius: 8px;
+  background: var(--color-white);
+  color: var(--color-ink);
+}
+
+.field input[type="range"] {
+  width: 100%;
+  accent-color: var(--color-orchid-dark);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.n-value {
+  font-family: var(--font-mono);
+  color: var(--color-orchid-dark);
+}
+
+/* Botones de opción tipo "pastilla" (izquierda / derecha / punto medio) */
+.segmented {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.segmented input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.segmented label {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.4rem 0.8rem;
+  border: 1.5px solid var(--color-mauve);
+  border-radius: 999px;
+  background: var(--color-white);
+  color: var(--color-ink-soft);
+  cursor: pointer;
+}
+
+.segmented input:checked + label {
+  background: var(--color-orchid);
+  border-color: var(--color-orchid-dark);
+  color: var(--color-ink);
+}
+
+.segmented input:focus-visible + label {
+  outline: 3px solid var(--color-orchid-dark);
+  outline-offset: 2px;
+}
+
+.error-msg {
+  color: #9B1C4B;
+  font-size: 0.85rem;
+  font-weight: 600;
+  min-height: 1.2em;
+  margin: 0;
+}
+
+/* Gráficas */
+.plot {
+  width: 100%;
+  height: 380px;
+}
+
+.plot-small {
+  height: 300px;
+}
+
+.plot-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+
+/* Panel de resultados numéricos */
+.results {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.result-item {
+  border: 1.5px solid var(--color-mauve);
+  border-radius: var(--radius);
+  padding: 0.7rem 0.9rem;
+  background: var(--color-white);
+}
+
+.result-item span {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--color-ink-soft);
+}
+
+.result-item strong {
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  color: var(--color-ink);
+}
+
+.result-item.is-selected {
+  border-color: var(--color-orchid-dark);
+  background: var(--color-blush);
+}
+
+/* Tablas de datos */
+.table-wrap {
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.data-table {
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  min-width: 100%;
+}
+
+.data-table th,
+.data-table td {
+  border: 1px solid var(--color-mauve);
+  padding: 0.5rem 0.8rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.data-table th {
+  background: var(--color-blush);
+  color: var(--color-ink);
+  font-weight: 700;
+}
+
+.data-table td {
+  font-family: var(--font-mono);
+  color: var(--color-ink);
+}
+
+/* ---------- Ejemplos resueltos ---------- */
+.example {
+  border: 1.5px solid var(--color-mauve);
+  border-left: 4px solid var(--color-orchid);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.example h3 {
+  margin-top: 0;
+}
+
+.example .statement {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.step {
+  margin-top: 1.25rem;
+}
+
+.step-title {
+  font-weight: 700;
+  color: var(--color-ink);
+  margin: 0 0 0.3rem;
+}
+
+.step p {
+  margin: 0.3rem 0;
+}
+
+.example .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* ---------- Navegación entre módulos ---------- */
+.module-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--color-blush);
+  padding: 2rem 0 0;
+  margin-top: 3rem;
+}
+
+.module-nav a {
+  font-weight: 700;
+  text-decoration: none;
+  padding: 0.6rem 1.1rem;
+  border: 1.5px solid var(--color-mauve);
+  border-radius: var(--radius);
+  color: var(--color-ink);
+}
+
+.module-nav a:hover {
+  background: var(--color-blush);
+  border-color: var(--color-orchid-dark);
+}

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plataforma de Cálculo Integral · UTP</title>
+
+  <!-- Tipografías: Fraunces (títulos), Manrope (texto), IBM Plex Mono (números de módulo) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+  <!-- ===== HERO ===== -->
+  <header class="hero">
+    <!-- Curva decorativa de fondo: representa el área bajo una curva, tema central del curso -->
+    <svg class="hero-curve" viewBox="0 0 1200 300" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,220 C 200,60 400,260 600,140 C 800,20 1000,200 1200,90 L1200,300 L0,300 Z" fill="var(--color-orchid)" opacity="0.18"/>
+      <path d="M0,220 C 200,60 400,260 600,140 C 800,20 1000,200 1200,90" fill="none" stroke="var(--color-mauve)" stroke-width="2" opacity="0.4"/>
+    </svg>
+
+    <div class="container hero-content">
+      <h1>Plataforma interactiva Cálculo Integral</h1>
+      <p class="hero-subtitle">
+        Explora sumas de Riemann, integrales definidas
+        e indefinidas y sus métodos de solución, construida como proyecto semestral
+        del curso.
+      </p>
+      <p class="hero-meta">Universidad Tecnológica de Pereira,2026</p>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- ===== FASE 1: módulos 1-6, disponibles ===== -->
+    <section class="phase-section" aria-labelledby="fase1-titulo">
+      <div class="phase-header">
+        <h2 id="fase1-titulo">Fase 1</h2>
+        <span class="badge badge--live">Disponible ahora</span>
+      </div>
+
+      <div class="module-grid">
+        <a class="module-card module-card--live" href="modulo-01-riemann/index.html">
+          <span class="module-number">01</span>
+          <h3 class="module-title">Sumas de Riemann</h3>
+          <p class="module-desc">Aproxima el área bajo una curva sumando rectángulos por la izquierda, la derecha o el punto medio.</p>
+        </a>
+
+        <a class="module-card module-card--live" href="modulo-02-trapecio/index.html">
+          <span class="module-number">02</span>
+          <h3 class="module-title">Regla del Trapecio</h3>
+          <p class="module-desc">Sustituye los rectángulos por trapecios para reducir el error de la aproximación.</p>
+        </a>
+
+        <a class="module-card module-card--live" href="modulo-03-punto-medio/index.html">
+          <span class="module-number">03</span>
+          <h3 class="module-title">Regla del Punto Medio</h3>
+          <p class="module-desc">Usa el punto medio de cada subintervalo para lograr una aproximación más ajustada.</p>
+        </a>
+
+        <a class="module-card module-card--live" href="modulo-04-simpson/index.html">
+          <span class="module-number">04</span>
+          <h3 class="module-title">Regla de Simpson</h3>
+          <p class="module-desc">Ajusta parábolas a la curva para aproximaciones de alta precisión, con n par.</p>
+        </a>
+
+        <a class="module-card module-card--live" href="modulo-05-integral-definida/index.html">
+          <span class="module-number">05</span>
+          <h3 class="module-title">Integral Definida y Área</h3>
+          <p class="module-desc">Calcula el valor exacto de una integral definida y el área entre dos curvas.</p>
+        </a>
+
+        <a class="module-card module-card--live" href="modulo-06-integracion-directa/index.html">
+          <span class="module-number">06</span>
+          <h3 class="module-title">Integración Directa</h3>
+          <p class="module-desc">Aplica las reglas básicas de antiderivadas y compara f(x) con su antiderivada F(x).</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- ===== FASE 2: módulos 7-10, próximamente ===== -->
+    <section class="phase-section" aria-labelledby="fase2-titulo">
+      <div class="phase-header">
+        <h2 id="fase2-titulo">Fase 2</h2>
+        <span class="badge badge--soon">NO disponible</span>
+      </div>
+
+      <div class="module-grid">
+        <a class="module-card module-card--soon" href="modulo-07-sustitucion/index.html">
+          <span class="module-number">07</span>
+          <h3 class="module-title">Sustitución (Potencias)</h3>
+          <p class="module-desc">Proximamente...</p>
+        </a>
+
+        <a class="module-card module-card--soon" href="modulo-08-exponenciales/index.html">
+          <span class="module-number">08</span>
+          <h3 class="module-title">Integrales Exponenciales</h3>
+          <p class="module-desc">Proximamente...</p>
+        </a>
+
+        <a class="module-card module-card--soon" href="modulo-09-logaritmicas/index.html">
+          <span class="module-number">09</span>
+          <h3 class="module-title">Integrales Logarítmicas</h3>
+          <p class="module-desc">Proximamente...</p>
+        </a>
+
+        <a class="module-card module-card--soon" href="modulo-10-trigonometricas/index.html">
+          <span class="module-number">10</span>
+          <h3 class="module-title">Integrales Trigonométricas</h3>
+          <p class="module-desc">Proximamente...</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- ===== FASE 3: módulos 11-14, próximamente ===== -->
+    <section class="phase-section" aria-labelledby="fase3-titulo">
+      <div class="phase-header">
+        <h2 id="fase3-titulo">Fase 3</h2>
+        <span class="badge badge--soon">NO disponible</span>
+      </div>
+
+      <div class="module-grid">
+        <a class="module-card module-card--soon" href="modulo-11-trig-inversas/index.html">
+          <span class="module-number">11</span>
+          <h3 class="module-title">Trigonométricas Inversas</h3>
+          <p class="module-desc">Proximamente...</p>
+        </a>
+
+        <a class="module-card module-card--soon" href="modulo-12-hiperbolicas-inversas/index.html">
+          <span class="module-number">12</span>
+          <h3 class="module-title">Hiperbólicas Inversas</h3>
+          <p class="module-desc">Proximamente...</p>
+        </a>
+
+        <a class="module-card module-card--soon" href="modulo-13-trinomio/index.html">
+          <span class="module-number">13</span>
+          <h3 class="module-title">Trinomio ax² + bx + c</h3>
+          <p class="module-desc">Proximamente...</p>
+        </a>
+
+        <a class="module-card module-card--soon" href="modulo-14-partes/index.html">
+          <span class="module-number">14</span>
+          <h3 class="module-title">Integración por Partes</h3>
+          <p class="module-desc">Proximamente...</p>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>María Paula Romero-Cálculo Integral, 2026.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
